@@ -3,8 +3,8 @@ import com.typesafe.config.Config
 import play.api.libs
 import play.Environment
 import net.codingwell.scalaguice._
-import play.libs.akka.AkkaGuiceSupport
-import services.Service1
+import play.api.libs.concurrent.AkkaGuiceSupport
+import services.{ActService1, Service1}
 
 /**
   * Created by Ilya Volynin on 19.10.2018 at 14:29.
@@ -29,5 +29,6 @@ class MainModule(environment: Environment, configuration: Config) extends Abstra
     bind[Boolean].annotatedWithName("showAG").toInstance(showAddGreet)
     bind[String].annotatedWithName("aG").toInstance(addGreet)
     bind[Service1].asEagerSingleton()
+    bindActor[ActService1]("act1")
   }
 }

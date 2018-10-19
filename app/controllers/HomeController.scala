@@ -1,9 +1,18 @@
 package controllers
+import akka.actor.{ActorRef, ActorSystem}
 import javax.inject._
 import play.api._
 import play.api.mvc._
 import play.api.db.Database
 import services.Service1
+import akka.pattern._
+import akka.stream.Materializer
+import akka.util.Timeout
+import services.ActService1.{Greeting, getGreeting}
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -12,8 +21,10 @@ import services.Service1
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents, s1: Service1,
                                @Named("showAG") showAG: Boolean,
-                               @Named("aG") aG: String) extends AbstractController(cc) {
+                               @Named("aG") aG: String,
+                               @Named("act1") actor1: ActorRef)(implicit system: ActorSystem, mat: Materializer, val ec: ExecutionContext) extends AbstractController(cc) {
 
+  implicit val timeout: Timeout = 10.seconds
   /**
     * Create an Action to render an HTML page.
     *
@@ -23,5 +34,12 @@ class HomeController @Inject()(cc: ControllerComponents, s1: Service1,
     */
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(s1.getMyName(showAG, aG)))
+  }
+
+  def indexAct() = Action.async { implicit request: Request[AnyContent] =>
+    (actor1 ? getGreeting("")).map{
+      case Greeting(message) =>
+        Ok(views.html.index(message))
+    }
   }
 }
