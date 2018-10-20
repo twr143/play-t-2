@@ -1,3 +1,4 @@
+import actions.{ValidateParamsAction, ValidateParamsOddEvenAction}
 import com.google.inject.AbstractModule
 import com.typesafe.config.Config
 import play.api.libs
@@ -29,6 +30,8 @@ class MainModule(environment: Environment, configuration: Config) extends Abstra
     bind[Boolean].annotatedWithName("showAG").toInstance(showAddGreet)
     bind[String].annotatedWithName("aG").toInstance(addGreet)
     bind[Service1].asEagerSingleton()
+    bind[ValidateParamsOddEvenAction].asEagerSingleton()
+    bind[ValidateParamsAction].asEagerSingleton()
     bindActor[ActService1]("act1")
   }
 }

@@ -1,4 +1,5 @@
 package controllers
+import actions.{ValidateParamsAction, ValidateParamsOddEvenAction}
 import akka.actor.{ActorRef, ActorSystem}
 import javax.inject._
 import play.api._
@@ -13,18 +14,21 @@ import services.ActService1.{Greeting, getGreeting}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
-
 /**
   * This controller creates an `Action` to handle HTTP requests to the
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents, s1: Service1,
+class HomeController @Inject()(cc: ControllerComponents,
+                               s1: Service1,
+                               validateParamsAction: ValidateParamsAction,
+                               validateParamsOEAction: ValidateParamsOddEvenAction,
                                @Named("showAG") showAG: Boolean,
                                @Named("aG") aG: String,
                                @Named("act1") actor1: ActorRef)(implicit system: ActorSystem, mat: Materializer, val ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val timeout: Timeout = 10.seconds
+
   /**
     * Create an Action to render an HTML page.
     *
@@ -36,8 +40,8 @@ class HomeController @Inject()(cc: ControllerComponents, s1: Service1,
     Ok(views.html.index(s1.getMyName(showAG, aG)))
   }
 
-  def indexAct() = Action.async { implicit request: Request[AnyContent] =>
-    (actor1 ? getGreeting("")).map{
+  def indexAct() = validateParamsAction.andThen(validateParamsOEAction).async { implicit request: Request[AnyContent] =>
+    (actor1 ? getGreeting("")).map {
       case Greeting(message) =>
         Ok(views.html.index(message))
     }
