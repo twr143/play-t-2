@@ -1,4 +1,5 @@
 package controllers
+import actions.ValidateParamsOddEvenAction.SecuredRequest
 import actions.{ValidateParamsAction, ValidateParamsOddEvenAction}
 import akka.actor.{ActorRef, ActorSystem}
 import javax.inject._
@@ -22,7 +23,7 @@ import scala.concurrent.duration._
 class HomeController @Inject()(cc: ControllerComponents,
                                s1: Service1,
                                validateParamsAction: ValidateParamsAction,
-                               validateParamsOEAction: ValidateParamsOddEvenAction,
+                               validateParamsOEAction: ValidateParamsOddEvenAction[SecuredRequest],
                                @Named("showAG") showAG: Boolean,
                                @Named("aG") aG: String,
                                @Named("act1") actor1: ActorRef)(implicit system: ActorSystem, mat: Materializer, val ec: ExecutionContext) extends AbstractController(cc) {
@@ -40,7 +41,7 @@ class HomeController @Inject()(cc: ControllerComponents,
     Ok(views.html.index(s1.getMyName(showAG, aG)))
   }
 
-  def indexAct() = validateParamsAction.andThen(validateParamsOEAction).async { implicit request: Request[AnyContent] =>
+  def indexAct() = validateParamsAction.andThen(validateParamsOEAction).async { implicit request: SecuredRequest[AnyContent] =>
     (actor1 ? getGreeting("")).map {
       case Greeting(message) =>
         Ok(views.html.index(message))

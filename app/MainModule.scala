@@ -1,5 +1,6 @@
-import actions.{ValidateParamsAction, ValidateParamsOddEvenAction}
-import com.google.inject.AbstractModule
+import actions.ValidateParamsOddEvenAction.SecuredRequest
+import actions.{ValidateParamsAction, ValidateParamsOddEvenAction, ValidateParamsOddEvenActionSecured}
+import com.google.inject.{AbstractModule, TypeLiteral}
 import com.typesafe.config.Config
 import play.api.libs
 import play.Environment
@@ -30,7 +31,7 @@ class MainModule(environment: Environment, configuration: Config) extends Abstra
     bind[Boolean].annotatedWithName("showAG").toInstance(showAddGreet)
     bind[String].annotatedWithName("aG").toInstance(addGreet)
     bind[Service1].asEagerSingleton()
-    bind[ValidateParamsOddEvenAction].asEagerSingleton()
+    bind(new TypeLiteral[ValidateParamsOddEvenAction[SecuredRequest]]{}).to(classOf[ValidateParamsOddEvenActionSecured])
     bind[ValidateParamsAction].asEagerSingleton()
     bindActor[ActService1]("act1")
   }
