@@ -37,11 +37,11 @@ class HomeController @Inject()(cc: ControllerComponents,
     * will be called when the application receives a `GET` request with
     * a path of `/`.
     */
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(s1.getMyName(showAG, aG)))
   }
 
-  def indexAct() = validateParamsAction.andThen(validateParamsOEAction).async { implicit request: SecuredRequest[AnyContent] =>
+  def indexAct(): Action[AnyContent] = validateParamsAction.andThen(validateParamsOEAction).async { request: SecuredRequest[AnyContent] =>
     (actor1 ? getGreeting("")).map {
       case Greeting(message) =>
         Ok(views.html.index(message))
