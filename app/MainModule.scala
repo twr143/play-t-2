@@ -14,7 +14,7 @@ import services.{ActService1, Service1}
 object MainModule {
 }
 
-class MainModule@Inject()(environment: Environment, configuration: Configuration) extends AbstractModule with AkkaGuiceSupport with ScalaModule {
+class MainModule(environment: Environment, configuration: Configuration) extends AbstractModule with AkkaGuiceSupport with ScalaModule {
   import MainModule._
 
   override def configure(): Unit = {
