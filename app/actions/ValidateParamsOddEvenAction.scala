@@ -4,6 +4,7 @@ import javax.inject.Inject
 import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
+import utils.ImplicitExtensions._
 
 /**
   * Created by Ilya Volynin on 20.10.2018 at 11:40.
@@ -13,6 +14,7 @@ abstract class ValidateParamsOddEvenAction[T[A] <: Request[A]] @Inject()(default
   override def parser: BodyParser[AnyContent] = defaultParser
 
   def createRequest[A](request: Request[A]): T[A]
+
   override def invokeBlock[A](request: Request[A], block: T[A] => Future[Result]): Future[Result]
 
   override protected def executionContext: ExecutionContext = ec
@@ -31,9 +33,16 @@ class ValidateParamsOddEvenActionSecured @Inject()(defaultParser: BodyParsers.De
   override def createRequest[A](request: Request[A]): SecuredRequest[A] = SecuredRequest(request)
 
   override def invokeBlock[A](request: Request[A], block: SecuredRequest[A] => Future[Result]): Future[Result] = {
-    val optParam1 = request.getQueryString("param1")
-    if (optParam1.exists(_.toInt % 2 == 0)) block(createRequest(request))
-    else
-      Future.successful(play.api.mvc.Results.Ok(views.html.error("param1 is odd")))
+    requestMap(request).respondWith(SecuredRequest(request), block)
   }
+
+  def requestMap[A](request: Request[A]): String =
+    request.getQueryString("param1")
+      .fold("param1 is not set")(
+        parameter =>
+          Try(parameter.toInt).fold(_ => "param1 is NAN",
+            intValue =>
+              if (intValue % 2 == 0) ""
+              else "param1 is odd"
+          ))
 }
