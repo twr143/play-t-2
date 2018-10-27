@@ -7,10 +7,10 @@ import scala.util.Try
   */
 trait BaseAction {
 
-  def validate[A](request: Request[A], paramName: String): String = request.getQueryString("param1")
-    .fold("param1 is not set")(
+  def validate[A](request: Request[A], paramName: String): String = request.getQueryString(paramName)
+    .fold(s"$paramName is not set")(
       parameter =>
-        Try(parameter.toInt).fold(_ => "param1 is NAN",
+        Try(parameter.toInt).fold(_ => s"$paramName is NAN",
           intValue => pfLogic(intValue)))
 
   def pfLogic: PartialFunction[Int, String]
