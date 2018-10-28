@@ -40,12 +40,13 @@ class HomeController @Inject()(cc: ControllerComponents,
     */
   def index() = Action(implicit request => Ok(views.html.index(nameService.getMyName(showAG, aG))))
 
-  def indexAct(): Action[AnyContent] =
-    validateParamsAction.andThen(validateParamsOEAction)
-      .async { _ =>
-        (greeter ? GetGreeting("User does not matter"))
-          .map {
-            case Greeting(message) => Ok(views.html.index(message))
-          }
-      }
+  def indexAct(): Action[AnyContent] = validateParamsAction andThen validateParamsOEAction
+
+  implicit def toGreeting(builder: ActionBuilder[SecuredRequest, AnyContent]): Action[AnyContent] =
+    builder.async { _ =>
+      (greeter ? GetGreeting("User does not matter"))
+        .map {
+          case Greeting(message) => Ok(views.html.index(message))
+        }
+    }
 }

@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext
   */
 abstract class ValidateParamsOddEvenAction[R[A] <: Request[A]]
 (implicit val parser: BodyParsers.Default, implicit val executionContext: ExecutionContext)
-  extends ActionBuilder[R, AnyContent] with BaseAction[R]
+  extends ParameterDiscerningAction[R]
 
 final case class SecuredRequest[A](request: Request[A]) extends WrappedRequest[A](request)
 

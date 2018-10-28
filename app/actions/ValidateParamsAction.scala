@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext
   */
 class ValidateParamsAction @Inject()(implicit val parser: BodyParsers.Default,
                                      implicit val executionContext: ExecutionContext)
-  extends BaseAction[Request] {
+  extends ParameterDiscerningAction[Request] {
 
   override def pfLogic: PartialFunction[Int, String] = {
     case value if value <= 5 && value >= 0 => ""

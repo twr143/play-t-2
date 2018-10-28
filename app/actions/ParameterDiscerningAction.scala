@@ -10,7 +10,7 @@ import utils.ImplicitExtensions._
 /**
   * Created by Ilya Volynin on 27.10.2018 at 13:26.
   */
-trait BaseAction[R[A] <: Request[A]] extends ActionBuilder[R, AnyContent] {
+trait ParameterDiscerningAction[R[A] <: Request[A]] extends ActionBuilder[R, AnyContent] {
 
   override def invokeBlock[A](request: Request[A],
                               block: R[A] => Future[Result]): Future[Result] =
