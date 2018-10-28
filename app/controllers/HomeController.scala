@@ -25,9 +25,7 @@ class HomeController @Inject()(cc: ControllerComponents,
                                @Named("showAG") showAG: Boolean,
                                @Named("aG") aG: String,
                                @Named(ActorNames.greeter) greeter: ActorRef)
-                              (implicit system: ActorSystem,
-                               mat: Materializer,
-                               val ec: ExecutionContext) extends AbstractController(cc) {
+                              (implicit val ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val timeout: Timeout = 10.seconds
 
