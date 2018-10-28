@@ -1,7 +1,6 @@
 package controllers
 
-import actions.ValidateParamsOddEvenAction.SecuredRequest
-import actions.{ValidateParamsAction, ValidateParamsOddEvenAction}
+import actions.{SecuredRequest, ValidateParamsAction, ValidateParamsOddEvenAction}
 import akka.actor.{ActorRef, ActorSystem}
 import akka.pattern._
 import akka.stream.Materializer

@@ -1,10 +1,9 @@
-import services.ActorNames.greeter
-import actions.ValidateParamsOddEvenAction.SecuredRequest
-import actions.{ValidateParamsAction, ValidateParamsOddEvenAction, ValidateParamsOddEvenActionSecured}
+import actions.{SecuredRequest, ValidateParamsAction, ValidateParamsOddEvenAction, ValidateParamsOddEvenActionSecured}
 import com.google.inject.TypeLiteral
 import net.codingwell.scalaguice._
 import play.api.libs.concurrent.AkkaGuiceSupport
 import play.api.{Configuration, Environment}
+import services.ActorNames.greeter
 import services.{Greeter, NameService}
 
 /**
