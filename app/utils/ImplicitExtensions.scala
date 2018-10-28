@@ -1,4 +1,5 @@
 package utils
+
 import play.api.mvc._
 import scala.concurrent.Future
 
@@ -7,10 +8,12 @@ import scala.concurrent.Future
   */
 object ImplicitExtensions {
 
-  implicit class StringExt[A](s: String) {
+  implicit class StringExt[A](sourceString: String) {
 
-    def respondWith[T[A] <: Request[A]](request: T[A], block: T[A] => Future[Result]): Future[Result]
-    = if (s.isEmpty) block(request) else Future.successful(Results.Ok(views.html.error(s)))
+    def respondWith[T[A] <: Request[A]](request: T[A],
+                                        block: T[A] => Future[Result]): Future[Result] =
+      if (sourceString.isEmpty) block(request)
+      else Future.successful(Results.Ok(views.html.error(sourceString)))
   }
 
 }

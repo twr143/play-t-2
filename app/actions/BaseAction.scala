@@ -1,5 +1,7 @@
 package actions
+
 import play.api.mvc.Request
+
 import scala.util.Try
 
 /**
@@ -7,11 +9,12 @@ import scala.util.Try
   */
 trait BaseAction {
 
-  def validate[A](request: Request[A], paramName: String): String = request.getQueryString(paramName)
-    .fold(s"$paramName is not set")(
-      parameter =>
-        Try(parameter.toInt).fold(_ => s"$paramName is NAN",
-          intValue => pfLogic(intValue)))
+  def validate[A](request: Request[A], paramName: String): String =
+    request.getQueryString(paramName)
+      .fold(s"$paramName is not set")(
+        parameter =>
+          Try(parameter.toInt)
+            .fold(_ => s"$paramName is NAN", intValue => pfLogic(intValue)))
 
   def pfLogic: PartialFunction[Int, String]
 }
