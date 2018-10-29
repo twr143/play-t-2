@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by Ilya Volynin on 20.10.2018 at 11:40.
   */
-abstract class ValidateParamsOddEvenAction[R[A] <: Request[A]] extends ParameterDiscerningAction[R]
+trait ValidateParamsOddEvenAction[R[A] <: Request[A]] extends ParameterDiscerningAction[R]
 
 final case class SecuredRequest[A](request: Request[A]) extends WrappedRequest[A](request)
 

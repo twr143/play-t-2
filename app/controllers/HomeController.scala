@@ -1,9 +1,8 @@
 package controllers
 
 import actions.{SecuredRequest, ValidateParamsAction, ValidateParamsOddEvenAction}
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.ActorRef
 import akka.pattern._
-import akka.stream.Materializer
 import akka.util.Timeout
 import javax.inject._
 import play.api.mvc._
