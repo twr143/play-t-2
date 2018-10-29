@@ -8,8 +8,8 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by Ilya Volynin on 20.10.2018 at 10:21.
   */
-class ValidateParamsAction @Inject()(implicit val parser: BodyParsers.Default,
-                                     implicit val executionContext: ExecutionContext)
+class ValidateParamsAction @Inject()
+(implicit val parser: BodyParsers.Default, val executionContext: ExecutionContext)
   extends ParameterDiscerningAction[Request] {
 
   override def pfLogic: PartialFunction[Int, String] = {

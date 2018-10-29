@@ -8,14 +8,12 @@ import scala.concurrent.ExecutionContext
 /**
   * Created by Ilya Volynin on 20.10.2018 at 11:40.
   */
-abstract class ValidateParamsOddEvenAction[R[A] <: Request[A]]
-(implicit val parser: BodyParsers.Default, implicit val executionContext: ExecutionContext)
-  extends ParameterDiscerningAction[R]
+abstract class ValidateParamsOddEvenAction[R[A] <: Request[A]] extends ParameterDiscerningAction[R]
 
 final case class SecuredRequest[A](request: Request[A]) extends WrappedRequest[A](request)
 
 class ValidateParamsOddEvenActionSecured @Inject()
-(implicit val defaultParser: BodyParsers.Default, implicit val ec: ExecutionContext)
+(implicit val parser: BodyParsers.Default, val executionContext: ExecutionContext)
   extends ValidateParamsOddEvenAction[SecuredRequest] {
 
   override def pfLogic: PartialFunction[Int, String] = {

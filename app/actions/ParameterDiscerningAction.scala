@@ -1,11 +1,10 @@
 package actions
 
-import play.api.mvc.{ActionBuilder, AnyContent, Request, Result}
+import play.api.mvc._
+import utils.ImplicitExtensions._
 
 import scala.concurrent.Future
 import scala.util.Try
-
-import utils.ImplicitExtensions._
 
 /**
   * Created by Ilya Volynin on 27.10.2018 at 13:26.
