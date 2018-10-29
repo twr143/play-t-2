@@ -1,3 +1,6 @@
-.error{
+.error {
     color: darkorange;
+}
+.answer {
+    color: green;
 }
