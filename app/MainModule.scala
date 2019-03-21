@@ -1,7 +1,8 @@
-import actions.{SecuredRequest, ValidateParamsAction, ValidateParamsOddEvenAction, ValidateParamsOddEvenActionSecured}
+import actions._
 import com.google.inject.TypeLiteral
 import net.codingwell.scalaguice._
 import play.api.libs.concurrent.AkkaGuiceSupport
+import play.api.mvc.Request
 import play.api.{Configuration, Environment}
 import services.ActorNames.greeter
 import services.{Greeter, NameService}
@@ -24,6 +25,8 @@ case class MainModule(environment: Environment, configuration: Configuration)
       .to(classOf[ValidateParamsOddEvenActionSecured])
 
     bind[ValidateParamsAction].asEagerSingleton()
+    bind(new TypeLiteral[ValidateEqualRequestsAction]{})
+      .to(classOf[SampleEqRequestAction])
     bindActor[Greeter](greeter)
   }
 }

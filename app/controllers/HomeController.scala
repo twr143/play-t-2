@@ -1,6 +1,5 @@
 package controllers
-
-import actions.{SecuredRequest, ValidateParamsAction, ValidateParamsOddEvenAction}
+import actions._
 import akka.actor.ActorRef
 import akka.pattern._
 import akka.util.Timeout
@@ -8,7 +7,6 @@ import javax.inject._
 import play.api.mvc._
 import services.Greeter.{GetGreeting, Greeting}
 import services.{ActorNames, NameService}
-
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
@@ -20,6 +18,7 @@ import scala.concurrent.duration._
 class HomeController @Inject()(cc: ControllerComponents,
                                nameService: NameService,
                                validateParamsAction: ValidateParamsAction,
+                               sampleEqRequestAction: ValidateEqualRequestsAction,
                                validateParamsOEAction: ValidateParamsOddEvenAction[SecuredRequest],
                                @Named("showAG") showAG: Boolean,
                                @Named("aG") aG: String,
@@ -38,6 +37,10 @@ class HomeController @Inject()(cc: ControllerComponents,
   def index() = Action(implicit request => Ok(views.html.index(nameService.getMyName(showAG, aG))))
 
   def indexAct(): Action[AnyContent] = validateParamsAction andThen validateParamsOEAction
+
+  def eqReqAct(): Action[AnyContent] = sampleEqRequestAction { implicit request =>
+    Ok(views.html.index(nameService.getMyName(showAG, aG)))
+  }
 
   implicit def toGreeting(builder: ActionBuilder[SecuredRequest, AnyContent]): Action[AnyContent] =
     builder.async { _ =>

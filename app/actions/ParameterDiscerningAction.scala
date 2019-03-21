@@ -14,7 +14,7 @@ trait ParameterDiscerningAction[R[A] <: Request[A]] extends ActionBuilder[R, Any
   override def invokeBlock[A](request: Request[A],
                               block: R[A] => Future[Result]): Future[Result] =
     validate(request, "param1")
-      .respondWith(createRequest(request), block)
+      .respondWith(createRequest(request), block)(this.executionContext)
 
   def createRequest[A](request: Request[A]): R[A]
 

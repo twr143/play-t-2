@@ -4,5 +4,8 @@ package services
   */
 class NameService {
 
-  def getMyName(showAG: Boolean, aG: String): String = "Ilya! " + (if (showAG) aG else "")
+  def getMyName(showAG: Boolean, aG: String): String = {
+    Thread.sleep(600)
+    "Ilya! " + (if (showAG) aG else "")
+  }
 }
