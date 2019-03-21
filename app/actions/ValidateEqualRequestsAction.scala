@@ -1,9 +1,7 @@
 package actions
 import play.api.mvc._
-
 import scala.concurrent.Future
 import utils.ImplicitExtensions._
-
 import scala.collection.mutable.Set
 import scala.util.{Failure, Try}
 
@@ -13,12 +11,17 @@ import scala.util.{Failure, Try}
 trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
 
   val processingRequestsSet: Set[String] = Set.empty
-  def paramNameCheckEquals:String
+
+  def paramNameCheckEquals: String
 
   override def onCompleteCallback[A](request: Request[A]): Try[Result] => Unit
   = onCompleteCallback(request.getQueryString(paramNameCheckEquals))
 
+  override def preStartEffect[A](request: Request[A]): Unit => Future[Unit] =
+    _ => preStartEffect(request.getQueryString(paramNameCheckEquals))
+
   def pfLogic: PartialFunction[Int, String]
+
   override def validationRules: List[Rule] = List(
     Rule("param1", true, v => {
       Try(v.toInt).fold(_ => s"param1 $v is NAN", EqualRequestPFLogic)
@@ -33,12 +36,7 @@ trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
       val result = s"du[licate req. for param param1 $i"
       println(result)
       result
-    case i: Int  =>
-      val checkResult = pfLogic(i)
-      if (checkResult.isEmpty)
-        processingRequestsSet += (i.toString)
-      println(s"procResultSet: $processingRequestsSet")
-      checkResult
+    case i: Int => pfLogic(i)
   }
 
   def onCompleteCallback(parameterValue: Option[String]):
@@ -47,6 +45,14 @@ trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
       parameterValue.map(processingRequestsSet -= _)
 //      println(s"onCompleteCallback: $processingRequestsSet")
     case Failure(ex) =>
-//      println(s"onCompleteCallback Failure: ${ex.getMessage}")
+    //      println(s"onCompleteCallback Failure: ${ex.getMessage}")
+  }
+
+  def preStartEffect(parameterValue: Option[String]):
+  Future[Unit] = {
+    Future.successful({
+//      println(s"preStartEffect set: $processingRequestsSet")
+      parameterValue.map(processingRequestsSet += _)
+    })
   }
 }

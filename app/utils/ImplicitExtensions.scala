@@ -8,16 +8,23 @@ import scala.util.Try
   */
 object ImplicitExtensions {
 
-  implicit class StringExt[A](sourceString: Set[String]) {
+  implicit class StringSetExt[A](sourceString: Set[String]) {
 
     def respondWith[T[A] <: Request[A]](request: T[A],
-                                        block: T[A] => Future[Result], onCompleteCallback: Try[Result] => Unit)
+                                        block: T[A] => Future[Result], preStartEffect: Unit => Future[Unit], onCompleteCallback: Try[Result] => Unit)
                                        (implicit executionContext: ExecutionContext): Future[Result] = {
       if (sourceString.isEmpty) {
-        block(request).andThen({ case x => onCompleteCallback(x) })
+        preStartEffect()
+          .flatMap(_ => block(request))
+          .andThen({ case x => onCompleteCallback(x) })
       }
       else Future.successful(Results.Ok(views.html.error(sourceString)))
     }
+  }
+
+  implicit class StringExt(s: String) {
+
+    def toOption(): Option[String] = if (s.isEmpty) None else Some(s)
   }
 
 }

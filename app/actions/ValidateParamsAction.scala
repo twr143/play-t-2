@@ -1,8 +1,6 @@
 package actions
-
 import javax.inject.Inject
 import play.api.mvc._
-
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
@@ -22,7 +20,7 @@ class ValidateParamsAction @Inject()
 
   override def createRequest[A](request: Request[A]): Request[A] = request
 
-  override def validationRules: List[Rule] = List(Rule("param1",true, v =>{
-    Try(v.toInt).fold(_=>s"param1 $v is NAN", pfLogic)
+  override def validationRules: List[Rule] = List(Rule("param1", true, v => {
+    Try(v.toInt).fold(_ => s"param1 $v is NAN", pfLogic)
   }))
 }

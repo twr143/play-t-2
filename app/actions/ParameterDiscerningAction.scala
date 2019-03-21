@@ -15,20 +15,21 @@ trait ParameterDiscerningAction[R[A] <: Request[A]] extends ActionBuilder[R, Any
 
   def onCompleteCallback[A](request: Request[A]): Try[Result] => Unit = { _ => () }
 
+  def preStartEffect[A](request: Request[A]): Unit => Future[Unit] = { _ => Future.successful(()) }
+
   override def invokeBlock[A](request: Request[A],
                               block: R[A] => Future[Result]): Future[Result] =
     validate(request)
-      .respondWith(createRequest(request), block, onCompleteCallback(request))(this.executionContext)
+      .respondWith(createRequest(request), block, preStartEffect(request), onCompleteCallback(request))(this.executionContext)
 
   def createRequest[A](request: Request[A]): R[A]
 
   def validate[A](request: Request[A]) =
-    validationRules.foldLeft(Set.empty[String])((currentErrors: Set[String], rule: Rule) =>
+    validationRules.foldLeft(Set.empty[String])((currentErrors, rule) =>
       currentErrors ++ {
-        val result = request.getQueryString(rule.paramName)
+        request.getQueryString(rule.paramName)
           .fold(if (rule.mandatory) s"${rule.paramName} is not set" else "")(
-            parameter => rule.validFunc(parameter))
-        if (result.isEmpty) None else Some(result)
+            parameter => rule.validFunc(parameter)).toOption
       }
     )
 }
