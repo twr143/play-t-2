@@ -1,4 +1,6 @@
-@(errDesc: String)
+@(errDesc: Set[String])
 @main("Error") {
-    <h1 class="error">@errDesc</h1>
+    @errDesc.map{e =>
+        <h1 class="error">@e</h1>
+    }
 }

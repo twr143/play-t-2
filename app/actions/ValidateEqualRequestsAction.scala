@@ -1,9 +1,11 @@
 package actions
 import play.api.mvc._
+
 import scala.concurrent.Future
 import utils.ImplicitExtensions._
+
 import scala.collection.mutable.Set
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 /**
   * Created by Ilya Volynin on 19.03.2019 at 13:35.
@@ -11,37 +13,24 @@ import scala.util.Try
 trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
 
   val processingRequestsSet: Set[String] = Set.empty
-  val paramName = "param2"
-  val validationRules: List[(String, PartialFunction[Int, Set[String]])] =
-    List(("param1", {
-      case value if value <= 5 && value >= 0 => Set.empty
-      case value if value == 42 => Set("param1 You got your answer, boss")
-      case value if value > 5 => Set("param1 is greater than 5")
-      case _ => Set("param1 is negative")
-    }), ("param2", {
-      case value if value <= 5 && value >= 0 => Set.empty
-      case value if value == 42 => Set("param2 You got your answer, boss")
-      case value if value > 5 => Set("param2 is greater than 5")
-      case _ => Set("param2 is negative")
-    }))
+  def paramNameCheckEquals:String
 
-  override def invokeBlock[A](request: Request[A],
-                              block: Request[A] => Future[Result]): Future[Result] =
-    validate(request, paramName)
-      .respondWith(createRequest(request),
-        block,
-        onCompleteCallback(request.getQueryString(paramName)))(this.executionContext)
+  override def onCompleteCallback[A](request: Request[A]): Try[Result] => Unit
+  = onCompleteCallback(request.getQueryString(paramNameCheckEquals))
 
-  override def validate[A](request: Request[A], paramName: String): String =
-    request.getQueryString(paramName)
-      .fold(s"$paramName is not set")(
-        parameter =>
-          Try(parameter.toInt)
-            .fold(_ => s"$paramName is NAN", EqualRequestPFLogic))
+  def pfLogic: PartialFunction[Int, String]
+  override def validationRules: List[Rule] = List(
+    Rule("param1", true, v => {
+      Try(v.toInt).fold(_ => s"param1 $v is NAN", EqualRequestPFLogic)
+    }),
+    Rule("param2", true, v => {
+      Try(v.toInt).fold(_ => s"param2 $v is NAN", pfLogic)
+    })
+  )
 
   def EqualRequestPFLogic: PartialFunction[Int, String] = {
     case i: Int if processingRequestsSet.contains(i.toString) =>
-      val result = s"du[licate req. for param param2 $i"
+      val result = s"du[licate req. for param param1 $i"
       println(result)
       result
     case i: Int  =>
@@ -56,5 +45,8 @@ trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
   Try[Result] => Unit = {
     case scala.util.Success(_) =>
       parameterValue.map(processingRequestsSet -= _)
+//      println(s"onCompleteCallback: $processingRequestsSet")
+    case Failure(ex) =>
+//      println(s"onCompleteCallback Failure: ${ex.getMessage}")
   }
 }

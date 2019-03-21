@@ -1,9 +1,8 @@
 package actions
-
 import javax.inject.Inject
 import play.api.mvc._
-
 import scala.concurrent.ExecutionContext
+import scala.util.Try
 
 /**
   * Created by Ilya Volynin on 20.10.2018 at 11:40.
@@ -16,10 +15,14 @@ class ValidateParamsOddEvenActionSecured @Inject()
 (implicit val parser: BodyParsers.Default, val executionContext: ExecutionContext)
   extends ValidateParamsOddEvenAction[SecuredRequest] {
 
-  override def pfLogic: PartialFunction[Int, String] = {
+  def pfLogic: PartialFunction[Int, String] = {
     case value if value % 2 == 0 => ""
     case _ => "param1 is odd"
   }
 
   override def createRequest[A](request: Request[A]): SecuredRequest[A] = SecuredRequest(request)
+
+  override def validationRules: List[Rule] = List(Rule("param1", true, v => {
+    Try(v.toInt).fold(_ => s"$v is NAN", pfLogic)
+  }))
 }

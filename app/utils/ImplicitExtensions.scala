@@ -8,10 +8,10 @@ import scala.util.Try
   */
 object ImplicitExtensions {
 
-  implicit class StringExt[A](sourceString: String) {
+  implicit class StringExt[A](sourceString: Set[String]) {
 
     def respondWith[T[A] <: Request[A]](request: T[A],
-                                        block: T[A] => Future[Result], onCompleteCallback: Try[Result] => Unit = { _ => () })
+                                        block: T[A] => Future[Result], onCompleteCallback: Try[Result] => Unit)
                                        (implicit executionContext: ExecutionContext): Future[Result] = {
       if (sourceString.isEmpty) {
         block(request).andThen({ case x => onCompleteCallback(x) })

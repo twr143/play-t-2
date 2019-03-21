@@ -1,8 +1,6 @@
 package actions
-
 import play.api.mvc._
 import utils.ImplicitExtensions._
-
 import scala.concurrent.Future
 import scala.util.Try
 
@@ -11,19 +9,26 @@ import scala.util.Try
   */
 trait ParameterDiscerningAction[R[A] <: Request[A]] extends ActionBuilder[R, AnyContent] {
 
+  case class Rule(paramName: String, mandatory: Boolean, validFunc: String => String)
+
+  def validationRules: List[Rule]
+
+  def onCompleteCallback[A](request: Request[A]): Try[Result] => Unit = { _ => () }
+
   override def invokeBlock[A](request: Request[A],
                               block: R[A] => Future[Result]): Future[Result] =
-    validate(request, "param1")
-      .respondWith(createRequest(request), block)(this.executionContext)
+    validate(request)
+      .respondWith(createRequest(request), block, onCompleteCallback(request))(this.executionContext)
 
   def createRequest[A](request: Request[A]): R[A]
 
-  def validate[A](request: Request[A], paramName: String): String =
-    request.getQueryString(paramName)
-      .fold(s"$paramName is not set")(
-        parameter =>
-          Try(parameter.toInt)
-            .fold(_ => s"$paramName is NAN", pfLogic))
-
-  def pfLogic: PartialFunction[Int, String]
+  def validate[A](request: Request[A]) =
+    validationRules.foldLeft(Set.empty[String])((currentErrors: Set[String], rule: Rule) =>
+      currentErrors ++ {
+        val result = request.getQueryString(rule.paramName)
+          .fold(if (rule.mandatory) s"${rule.paramName} is not set" else "")(
+            parameter => rule.validFunc(parameter))
+        if (result.isEmpty) None else Some(result)
+      }
+    )
 }
