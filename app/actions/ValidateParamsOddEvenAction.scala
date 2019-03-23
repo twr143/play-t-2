@@ -20,7 +20,7 @@ class ValidateParamsOddEvenActionSecured @Inject()
     case _ => "param1 is odd"
   }
 
-  override def createRequest[A](request: Request[A]): SecuredRequest[A] = SecuredRequest(request)
+  override def createRequest[A]: Request[A] => SecuredRequest[A] = request => SecuredRequest(request)
 
   override def validationRules: List[Rule] = List(Rule("param1", true, v => {
     Try(v.toInt).fold(_ => s"$v is NAN", pfLogic)

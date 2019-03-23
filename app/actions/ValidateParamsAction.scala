@@ -18,7 +18,7 @@ class ValidateParamsAction @Inject()
     case _ => "param1 is negative"
   }
 
-  override def createRequest[A](request: Request[A]): Request[A] = request
+  def createRequest[A]: Request[A] => Request[A] = identity
 
   override def validationRules: List[Rule] = List(Rule("param1", true, v => {
     Try(v.toInt).fold(_ => s"param1 $v is NAN", pfLogic)

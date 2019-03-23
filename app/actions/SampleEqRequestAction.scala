@@ -20,7 +20,7 @@ class SampleEqRequestAction @Inject()
   }
 
 
-  override def createRequest[A](request: Request[A]): Request[A] = request
+  override def createRequest[A]: Request[A] => Request[A] = identity
 
   override def paramNameCheckEquals: String = "param1"
 }

@@ -1,7 +1,6 @@
 package actions
 import play.api.mvc._
 import scala.concurrent.Future
-import utils.ImplicitExtensions._
 import scala.collection.mutable.Set
 import scala.util.{Failure, Try}
 
@@ -17,8 +16,8 @@ trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
   override def onCompleteCallback[A](request: Request[A]): Try[Result] => Unit
   = onCompleteCallback(request.getQueryString(paramNameCheckEquals))
 
-  override def preStartEffect[A](request: Request[A]): Unit => Future[Unit] =
-    _ => preStartEffect(request.getQueryString(paramNameCheckEquals))
+  override def preStartEffect[A]: Request[A] => Request[A] =
+    r => preStartEffect(r.getQueryString(paramNameCheckEquals))(r)
 
   def pfLogic: PartialFunction[Int, String]
 
@@ -43,16 +42,14 @@ trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
   Try[Result] => Unit = {
     case scala.util.Success(_) =>
       parameterValue.map(processingRequestsSet -= _)
-//      println(s"onCompleteCallback: $processingRequestsSet")
+    //      println(s"onCompleteCallback: $processingRequestsSet")
     case Failure(ex) =>
     //      println(s"onCompleteCallback Failure: ${ex.getMessage}")
   }
 
-  def preStartEffect(parameterValue: Option[String]):
-  Future[Unit] = {
-    Future.successful({
-//      println(s"preStartEffect set: $processingRequestsSet")
-      parameterValue.map(processingRequestsSet += _)
-    })
+  def preStartEffect[A](parameterValue: Option[String]): Request[A] => Request[A] = {
+    println(s"preStartEffect set: $processingRequestsSet")
+    parameterValue.map(processingRequestsSet += _)
+    identity
   }
 }

@@ -1,7 +1,7 @@
 package actions
 import play.api.mvc._
 import utils.ImplicitExtensions._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 /**
@@ -15,16 +15,16 @@ trait ParameterDiscerningAction[R[A] <: Request[A]] extends ActionBuilder[R, Any
 
   def onCompleteCallback[A](request: Request[A]): Try[Result] => Unit = { _ => () }
 
-  def preStartEffect[A](request: Request[A]): Unit => Future[Unit] = { _ => Future.successful(()) }
+  def preStartEffect[A]: R[A] => R[A] = identity
 
   override def invokeBlock[A](request: Request[A],
                               block: R[A] => Future[Result]): Future[Result] =
-    validate(request)
-      .respondWith(createRequest(request), block, preStartEffect(request), onCompleteCallback(request))(this.executionContext)
+    validate.andThen(process(block)(request)(this.executionContext))(request)
 
-  def createRequest[A](request: Request[A]): R[A]
+  // надо создавать request после всех проверок
+  def createRequest[A]: Request[A] => R[A]
 
-  def validate[A](request: Request[A]) =
+  def validate[A]: Request[A] => Set[String] = request =>
     validationRules.foldLeft(Set.empty[String])((currentErrors, rule) =>
       currentErrors ++ {
         request.getQueryString(rule.paramName)
@@ -32,4 +32,16 @@ trait ParameterDiscerningAction[R[A] <: Request[A]] extends ActionBuilder[R, Any
             parameter => rule.validFunc(parameter)).toOption
       }
     )
+
+  def process[A](block: R[A] => Future[Result])
+                (request: Request[A])
+                (implicit executionContext: ExecutionContext)
+  : Set[String] => Future[Result] = errors => {
+    if (errors.isEmpty) {
+      createRequest[A].andThen(preStartEffect).andThen(block)(request)
+        .andThen({ case x => onCompleteCallback(request)(x) })
+    }
+    else Future.successful(Results.Ok(views.html.error(errors)))
+  }
+
 }
