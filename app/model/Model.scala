@@ -4,6 +4,7 @@ import play.api.libs.json.{Json, OFormat}
 import ai.x.play.json.SingletonEncoder.simpleName
 import ai.x.play.json.implicits.formatSingleton
 
+
 /**
   * Created by Ilya Volynin on 04.10.2019 at 12:39.
   */
@@ -17,9 +18,10 @@ object Model {
 
   case class Person(name: String, age: Int, address: Address) extends AbstractPerson
 
-  case class PersonL(last: Int, age: Int, address: Address) extends AbstractPerson
-
+  //below order matters: supersets are above subsets
   case class AntiPerson(last: Int, middle: Int, age: Int, address: Address) extends AbstractPerson
+  case class PersonL(last: Int, age: Int, address: Address) extends AbstractPerson
+  case class Last(last: Int) extends AbstractPerson
 
   val person = Person("Ilya V", 37, Address(Street("Lebedev", 7), "Yaroslavl", "150000"))
 
@@ -29,9 +31,9 @@ object Model {
 
   implicit lazy val aPersonFormat = {
     implicit lazy val personFormat: OFormat[Person] = Jsonx.formatCaseClass[Person]
-    //below order matters: supersets are above subsets
-    implicit lazy val antiPersonFormat: OFormat[AntiPerson] = Jsonx.formatCaseClass[AntiPerson]
     implicit lazy val personLFormat: OFormat[PersonL] = Jsonx.formatCaseClass[PersonL]
+    implicit lazy val antiPersonFormat: OFormat[AntiPerson] = Jsonx.formatCaseClass[AntiPerson]
+    implicit lazy val lastFormat: OFormat[Last] = Jsonx.formatCaseClass[Last]
     Jsonx.oFormatSealed[AbstractPerson]
   }
 }

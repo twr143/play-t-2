@@ -55,13 +55,13 @@ class HomeController @Inject()(cc: ControllerComponents,
 
 
   def jsAct(): Action[JsValue] = Action.async(parse.tolerantJson(1024)) { req =>
-    println(s"${req.body.toString()}")
     req.body.validate[AbstractPerson].fold(
       invalid => Future.successful(BadRequest(JsError.toJson(invalid))),
       person ⇒ person match {
         case p: Person => Future(Ok(Json.toJson("name" -> p.name,"age"->p.age)))
         case p: PersonL => Future(Ok(Json.toJson("last" -> p.last,"age"->p.age)))
         case p: AntiPerson => Future(Ok(Json.toJson("anti" -> p.last,"age"->p.age)))
+        case p: Last => Future(Ok(Json.toJson("lastonly" -> p.last)))
       }
 
     )

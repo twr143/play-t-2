@@ -7,7 +7,18 @@
 GET     /                              controllers.HomeController.index
 GET     /act                           controllers.HomeController.indexAct
 GET     /eq                            controllers.HomeController.eqReqAct()
+###
+#  summary: test an adapter for different versions of payload
+#  tags:
+#    - Json Endpoints
+#  responses:
+#    200:
+#      description: success
+###
 POST    /js                            controllers.HomeController.jsAct
 
-# Map static resources from the /public folder to the /assets URL path
+### NoDocs ###
+GET   /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/lib/swagger-ui", file:String)
+
+### NoDocs ###
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
