@@ -18,6 +18,8 @@ libraryDependencies += "com.typesafe.akka" %% "akka-actor" % akkaVersion
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.2.1"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 libraryDependencies += "com.typesafe.play" %% "play-guice" % "2.6.15"
+libraryDependencies += "ai.x" %% "play-json-extensions" % "0.40.2"
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "iv.controllers._"
 
