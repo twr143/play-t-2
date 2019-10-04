@@ -29,6 +29,7 @@ object Model {
 
   implicit lazy val aPersonFormat = {
     implicit lazy val personFormat: OFormat[Person] = Jsonx.formatCaseClass[Person]
+    //below order matters: supersets are above subsets
     implicit lazy val antiPersonFormat: OFormat[AntiPerson] = Jsonx.formatCaseClass[AntiPerson]
     implicit lazy val personLFormat: OFormat[PersonL] = Jsonx.formatCaseClass[PersonL]
     Jsonx.oFormatSealed[AbstractPerson]
