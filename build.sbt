@@ -21,7 +21,7 @@ libraryDependencies += "com.typesafe.play" %% "play-guice" % "2.6.15"
 libraryDependencies += "ai.x" %% "play-json-extensions" % "0.40.2"
 libraryDependencies += "org.webjars" % "swagger-ui" % "2.2.0"
 
-swaggerDomainNameSpaces := Seq("model")
+swaggerDomainNameSpaces := Seq("model.Model")
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "iv.controllers._"
 

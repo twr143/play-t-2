@@ -14,6 +14,8 @@ GET     /eq                            controllers.HomeController.eqReqAct()
 #  responses:
 #    200:
 #      description: success
+#      schema:
+#        $ref: '#/definitions/model.Model.Person'
 ###
 POST    /js                            controllers.HomeController.jsAct
 
