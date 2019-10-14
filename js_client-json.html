@@ -1,0 +1,64 @@
+<script>
+
+var ws = new WebSocket("ws://127.0.0.1:8081/wsj");
+      ws.onopen = function() {
+            // Web Socket подключён. Вы можете отправить данные с помощью метода send().
+       ws.addEventListener('message', function (event) {
+    		console.log('Message from server ', event.data);
+			});
+			
+              ws.send(JSON.stringify({
+			  "last": 123,
+				  "middle":456,
+			  "age" : 37, 
+			  "address" : {
+				"street" :{ 
+				  "name": "Lebedev" ,
+				  "number":7
+				},
+				"city":"Yar",
+				"postcode":"150034"
+			  }
+			}));
+
+			     ws.send(JSON.stringify({
+			  "last": 123,
+			  "age" : 37, 
+			  "address" : {
+				"street" :{ 
+				  "name": "Lebedev" ,
+				  "number":7
+				},
+				"city":"Yar",
+				"postcode":"150034"
+			  }
+			}));
+
+			ws.send(JSON.stringify({
+			  "last": 123}));
+
+			               ws.send(JSON.stringify({
+			  "last": 987,
+				  "middle":777,
+			  "age" : 55, 
+			  "address" : {
+				"street" :{ 
+				  "name": "Lebedev" ,
+				  "number":7
+				},
+				"city":"Yar",
+				"postcode":"150034"
+			  }
+			}));
+
+			  setTimeout(function () {
+			  ws.close();
+    }, 3000);
+
+			  }
+			  ws.onclose = function(){
+					console.log('connection closed by client');			  
+			  }
+	
+</script>
+ 

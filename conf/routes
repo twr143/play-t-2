@@ -4,10 +4,11 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                              controllers.HomeController.index
-GET     /act                           controllers.HomeController.indexAct
-GET     /eq                            controllers.HomeController.eqReqAct()
-GET     /ws                            controllers.WebSocketController.socket
+GET         /                             controllers.HomeController.index
+GET         /act                          controllers.HomeController.indexAct
+GET         /eq                           controllers.HomeController.eqReqAct()
+GET         /ws                           controllers.WebSocketController.socket
+GET         /wsj                          controllers.WebSocketController.socketJs
 
 ###
 #  summary: test an adapter for different versions of payload
@@ -19,10 +20,10 @@ GET     /ws                            controllers.WebSocketController.socket
 #      schema:
 #        $ref: '#/definitions/model.Model.Person'
 ###
-POST    /js                            controllers.HomeController.jsAct
+POST        /js                           controllers.HomeController.jsAct
 
 ### NoDocs ###
-GET   /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/lib/swagger-ui", file:String)
+GET         /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/lib/swagger-ui", file:String)
 
 ### NoDocs ###
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                 controllers.Assets.versioned(path="/public", file: Asset)
