@@ -19,14 +19,14 @@ trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
   override def preStartEffect[A]: Request[A] => Request[A] =
     r => preStartEffect(r.getQueryString(paramNameCheckEquals))(r)
 
-  def pfLogic: PartialFunction[Int, String]
+  def pfLogic(paramIndex:Int): PartialFunction[Int, String]
 
   override def validationRules: List[Rule] = List(
     Rule("param1", true, v => {
       Try(v.toInt).fold(_ => s"param1 $v is NAN", EqualRequestPFLogic)
     }),
     Rule("param2", true, v => {
-      Try(v.toInt).fold(_ => s"param2 $v is NAN", pfLogic)
+      Try(v.toInt).fold(_ => s"param2 $v is NAN", pfLogic(2))
     })
   )
 
@@ -35,7 +35,7 @@ trait ValidateEqualRequestsAction extends ParameterDiscerningAction[Request] {
       val result = s"du[licate req. for param param1 $i"
       println(result)
       result
-    case i: Int => pfLogic(i)
+    case i: Int => pfLogic(1)(i)
   }
 
   def onCompleteCallback(parameterValue: Option[String]):

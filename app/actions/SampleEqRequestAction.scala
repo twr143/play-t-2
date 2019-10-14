@@ -12,10 +12,10 @@ class SampleEqRequestAction @Inject()
 (implicit val parser: BodyParsers.Default, val executionContext: ExecutionContext)
   extends ValidateEqualRequestsAction {
 
-  def pfLogic: PartialFunction[Int, String] = {
+  def pfLogic(paramIndex:Int): PartialFunction[Int, String] = {
     case value if value <= 5 && value >= 0 => ""
     case value if value == 42 => "You got your answer, boss"
-    case value if value > 5 => "param1 is greater than 5"
+    case value if value > 5 => s"param $paramIndex is greater than 5"
     case value => s"$value is negative"
   }
 

@@ -28,8 +28,7 @@ trait ParameterDiscerningAction[R[A] <: Request[A]] extends ActionBuilder[R, Any
     validationRules.foldLeft(Set.empty[String])((currentErrors, rule) =>
       currentErrors ++ {
         request.getQueryString(rule.paramName)
-          .fold(if (rule.mandatory) s"${rule.paramName} is not set" else "")(
-            parameter => rule.validFunc(parameter)).toOption
+          .fold(if (rule.mandatory) s"${rule.paramName} is not set" else "")(rule.validFunc).toOption
       }
     )
 
