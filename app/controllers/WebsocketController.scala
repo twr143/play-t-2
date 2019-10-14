@@ -49,7 +49,7 @@ class WebSocketController @Inject()(cc: ControllerComponents)(implicit system: A
 
       def asyncBulkInsert(entries: Seq[TextMessage])(implicit as: ActorSystem): Future[Seq[String]] = {
         // dispatcher for returning future might be custom
-        Logger.debug(s"saved ${entries.size} messages, ${DateTimeUtils.currentODT}")
+        Logger.debug(s"saved ${entries.size} messages,  [.. ${entries.last.toString} ], ${DateTimeUtils.currentODT}")
         after(30.millis, as.scheduler, as.dispatcher, Future(entries.map(_.data))(as.dispatcher))
       }
     }

@@ -1,0 +1,22 @@
+<script>
+
+var ws = new WebSocket("ws://127.0.0.1:8081/ws");
+      ws.onopen = function() {
+            // Web Socket подключён. Вы можете отправить данные с помощью метода send().
+       ws.addEventListener('message', function (event) {
+    		console.log('Message from server ', event.data);
+			});
+			for (i=0;i<10000;i++)
+              ws.send("messg "+ i +" fr cl");
+
+			  setTimeout(function () {
+			  ws.close();
+    }, 5000);
+
+			  }
+			  ws.onclose = function(){
+					console.log('connection closed by client');			  
+			  }
+	
+</script>
+ 
