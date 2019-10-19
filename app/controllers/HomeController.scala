@@ -3,6 +3,7 @@ import actions._
 import akka.actor.ActorRef
 import akka.pattern._
 import akka.util.Timeout
+import ch.qos.logback.core.db.dialect.MySQLDialect
 import javax.inject._
 import play.api.libs.json.{JsError, JsValue, Json}
 import play.api.mvc._
@@ -11,7 +12,9 @@ import services.{ActorNames, NameService}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
-import model.Model.{_}
+import model.Model._
+import model.Model2._
+import utils.ImplicitExtensions._
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -53,17 +56,35 @@ class HomeController @Inject()(cc: ControllerComponents,
         }
     }
 
-
   def jsAct(): Action[JsValue] = Action.async(parse.tolerantJson(1024)) { req =>
     req.body.validate[AbstractPerson].fold(
       invalid => Future.successful(BadRequest(JsError.toJson(invalid))),
       person ⇒ person match {
-        case p: Person => Future(Ok(Json.toJson("name" -> p.name,"age"->p.age)))
-        case p: PersonL => Future(Ok(Json.toJson("last" -> p.last,"age"->p.age)))
-        case p: AntiPerson => Future(Ok(Json.toJson("anti" -> p.last,"age"->p.age)))
-        case p: Last => Future(Ok(Json.toJson("lastonly" -> p.last)))
+        case p: Person => Future.successful(Ok(Json.toJson("name" -> p.name, "age" -> p.age)))
+        case p: PersonL => Future.successful(Ok(Json.toJson("last" -> p.last, "age" -> p.age)))
+        case p: AntiPerson => Future.successful(Ok(Json.toJson("anti" -> p.last, "age" -> p.age)))
+        case p: Last => Future.successful(Ok(Json.toJson("lastonly" -> p.last)))
       }
-
     )
   }
+
+  def jsActResp(): Action[JsValue] = Action.async(parse.tolerantJson(1024)) { req =>
+    req.body.validate[AbstractRequest].fold(
+      invalid => Future.successful(BadRequest(JsError.toJson(invalid))),
+      request ⇒ request match {
+
+        case r1: Req1 =>
+          println(s"r1 works: $r1")
+//          val r2 = r1.copy(first = r1.first.orElse(Some(0)))
+          Future.successful(Ok(Json.toJson("requested"->Json.toJson(MyResp1(r1)))))
+        case r2: Req2 =>
+          println("r2 works")
+          Future.successful(Ok(Json.toJson("requested"->Json.toJson(MyResp2(r2)))))
+//        case r3: Req3 =>
+//          println("r3 works")
+//          Future.successful(Ok(Json.toJson("requested"->Json.toJson(MyResp3(r3)))))
+      }
+    )
+  }
+
 }

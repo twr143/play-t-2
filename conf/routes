@@ -21,6 +21,7 @@ GET         /wsj                          controllers.WebSocketController.socket
 #        $ref: '#/definitions/model.Model.Person'
 ###
 POST        /js                           controllers.HomeController.jsAct
+POST        /jsresp                       controllers.HomeController.jsActResp
 
 ### NoDocs ###
 GET         /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/lib/swagger-ui", file:String)
